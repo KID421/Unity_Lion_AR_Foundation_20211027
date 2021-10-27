@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: KID
-  productName: Lion_AR_Foundation_20211027
+  productName: Lion_AR_Foundation_Reflection_20211027
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -146,7 +146,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Android: com.KID.Lion_AR_Foundation_20211027
+    Android: com.KID.Lion_AR_Foundation_Reflection_20211027
     Standalone: com.DefaultCompany.LionARFoundation20211027
   buildNumber:
     Standalone: 0

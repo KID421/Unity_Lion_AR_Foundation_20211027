@@ -16,6 +16,10 @@ namespace KID.ARFoundation
         public GameObject goSpawn;
         [Header("AR 射線管理器"), Tooltip("此管理器要放在攝影機 Origin 物件上")]
         public ARRaycastManager arRaycastManager;
+        [Header("生成物件要面向的攝影機物件")]
+        public Transform traCamera;
+        [Header("生成物件面向速度"), Range(0, 100)]
+        public float speedLookAt = 3.5f;
 
         private Transform traSpawn;
         private List<ARRaycastHit> hits = new List<ARRaycastHit>();     // 清單欄位 = 新增 實體 清單物件
@@ -28,6 +32,7 @@ namespace KID.ARFoundation
         private void Update()
         {
             ClickAndDetechGround();
+            SpawnLoookAtCamera();
         }
 
         /// <summary>
@@ -39,12 +44,41 @@ namespace KID.ARFoundation
         /// </summary>
         private void ClickAndDetechGround()
         {
-            if (inputMouseLeft)
+            if (inputMouseLeft)                                                                         // 如果 按下指定按鍵
             {
-                Vector2 positionMouse = Input.mousePosition;
+                Vector2 positionMouse = Input.mousePosition;                                            // 取得 點擊座標
 
-                print("點擊座標：" + positionMouse);
+                // Ray ray = Camera.main.ScreenPointToRay(positionMouse);                               // 將 點擊座標 轉為 射線
+
+                if (arRaycastManager.Raycast(positionMouse, hits, TrackableType.PlaneWithinPolygon))    // 如果 射線 打到指定的地板物件
+                {
+                    Vector3 positionHit = hits[0].pose.position;                                        // 取得點到的座標
+
+                    if (traSpawn == null)
+                    {
+                        traSpawn = Instantiate(goSpawn, positionHit, Quaternion.identity).transform;    // 將物件生成在點到的座標上
+                        traSpawn.localScale = Vector3.one * 0.5f;                                       // 調整尺寸
+                    }
+                    else
+                    {
+                        traSpawn.position = positionHit;                                                // 否則 有生成過物件 就更新座標
+                    }
+                }
             }
+        }
+
+        /// <summary>
+        /// 生成物件面向攝影機
+        /// </summary>
+        private void SpawnLoookAtCamera()
+        {
+            if (traSpawn == null) return;                                                                   // 如果 生成物件為空值 跳出
+            Quaternion angle = Quaternion.LookRotation(traCamera.position - traSpawn.position);             // 取得向量
+            traSpawn.rotation = Quaternion.Lerp(traSpawn.rotation, angle, Time.deltaTime * speedLookAt);    // 角度插值
+            Vector3 angleOrigial = traSpawn.localEulerAngles;                                               // 取得角度
+            angleOrigial.x = 0;                                                                             // 凍結 X
+            angleOrigial.z = 0;                                                                             // 凍結 Z
+            traSpawn.localEulerAngles = angleOrigial;                                                       // 更新角度
         }
     }
 }
